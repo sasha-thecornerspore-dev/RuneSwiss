@@ -4,6 +4,15 @@ import type { CtSection, CorpusSection } from './types'
 
 const stripBrackets = (s: string): string => s.replace(/[<>]/g, '')
 
+/** Humanize a section id like "008_spirals" into "Spirals" for sections without a title. */
+function titleFromId(id: string): string {
+  return id
+    .replace(/^\d+[_-]?/, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim()
+}
+
 /** Normalize one raw cicada_tools section into a CorpusSection (decoding it if solved). */
 export function buildSection(id: string, index: number, raw: CtSection): CorpusSection {
   const cipherText = stripBrackets(raw.pages.map((p) => p.text).join('\n'))
@@ -11,7 +20,7 @@ export function buildSection(id: string, index: number, raw: CtSection): CorpusS
   const section: CorpusSection = {
     id,
     index,
-    title: raw.title?.trim() || '(untitled)',
+    title: raw.title?.trim() || titleFromId(id),
     status: solved ? 'solved' : 'unsolved',
     method,
     cipherText,
