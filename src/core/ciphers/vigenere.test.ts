@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { vigenereEncrypt, vigenereDecrypt, keyToIndices } from './vigenere'
+import { vigenereEncrypt, vigenereDecrypt, keyToIndices, vigenereInterrupt } from './vigenere'
 
 describe('vigenere', () => {
   it('accepts a latin key and maps to indices', () => {
@@ -19,5 +19,21 @@ describe('vigenere', () => {
   it('keys on rune positions, ignoring interleaved non-runes', () => {
     // key 'ᚢ'(+1) applied to every rune regardless of spaces
     expect(vigenereEncrypt('ᚠ ᚠ', 'ᚢ', 'add')).toBe('ᚢ ᚢ')
+  })
+})
+
+describe('vigenereInterrupt', () => {
+  it('matches plain vigenere when there are no interrupts', () => {
+    const pt = 'ᚠᚢᚦᚩᚱᚳᚷ'
+    expect(vigenereInterrupt(pt, 'ᚠᚢᚦ', { mode: 'add' })).toBe(vigenereEncrypt(pt, 'ᚠᚢᚦ', 'add'))
+  })
+  it('passes interrupt runes through unchanged and does not advance the key', () => {
+    // index 0 is an interrupt: ᚠ passes through; ᚢ(1) + key ᚢ(1) = 2 = ᚦ
+    expect(vigenereInterrupt('ᚠᚢ', 'ᚢ', { mode: 'add', interruptIndices: [0] })).toBe('ᚠᚦ')
+  })
+  it('can drop interrupt runes instead of passing them through', () => {
+    expect(
+      vigenereInterrupt('ᚠᚢ', 'ᚢ', { mode: 'add', interruptIndices: [0], dropInterrupts: true }),
+    ).toBe('ᚦ')
   })
 })
