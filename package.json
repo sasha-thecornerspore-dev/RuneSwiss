@@ -21,13 +21,13 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
-    "electron": "^33.2.0",
-    "electron-builder": "^24.13.3",
+    "electron": "^39.8.5",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^2.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.6.0",
-    "vitest": "^2.1.0"
+    "vitest": "^3.2.6"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.0"
