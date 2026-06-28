@@ -3,6 +3,7 @@
 // endpoint) is an intentionally provider-neutral fetch against /chat/completions — kept separate
 // from the Anthropic SDK, never mixed.
 import Anthropic from '@anthropic-ai/sdk'
+import { TOOLS, runTool } from './tools'
 
 export interface ChatConfig {
   provider: 'anthropic' | 'openai'
@@ -34,20 +35,43 @@ async function streamAnthropic(
   onText: (delta: string) => void,
 ): Promise<void> {
   const client = new Anthropic({ apiKey })
-  const stream = client.messages.stream(
-    {
-      model: cfg.model || 'claude-opus-4-8',
-      max_tokens: 8192,
-      system: cfg.system,
-      // Adaptive thinking is the current default for hard tasks on Opus 4.x; some installed SDK
-      // type versions only type enabled/disabled, so cast — the request body passes through verbatim.
-      thinking: { type: 'adaptive' } as unknown as Anthropic.MessageStreamParams['thinking'],
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    },
-    { signal },
-  )
-  stream.on('text', (delta) => onText(delta))
-  await stream.finalMessage()
+  const convo: Anthropic.MessageParam[] = messages.map((m) => ({ role: m.role, content: m.content }))
+
+  // Streaming tool loop: the assistant may call engine tools; we run them and feed results back
+  // until it finishes (stop_reason !== 'tool_use'). Bounded so a confused model can't loop forever.
+  for (let turn = 0; turn < 8; turn++) {
+    if (signal.aborted) return
+    const stream = client.messages.stream(
+      {
+        model: cfg.model || 'claude-opus-4-8',
+        max_tokens: 8192,
+        system: cfg.system,
+        // Adaptive thinking is the current default for hard tasks on Opus 4.x; some installed SDK
+        // type versions only type enabled/disabled, so cast — the body passes through verbatim.
+        thinking: { type: 'adaptive' } as unknown as Anthropic.MessageStreamParams['thinking'],
+        tools: TOOLS as unknown as Anthropic.Tool[],
+        messages: convo,
+      },
+      { signal },
+    )
+    stream.on('text', (delta) => onText(delta))
+    const msg = await stream.finalMessage()
+    convo.push({ role: 'assistant', content: msg.content as unknown as Anthropic.ContentBlockParam[] })
+    if (msg.stop_reason !== 'tool_use') return
+
+    const results: Anthropic.ToolResultBlockParam[] = []
+    for (const block of msg.content) {
+      if (block.type === 'tool_use') {
+        onText(`\n  ⟢ ${block.name}…\n`)
+        results.push({
+          type: 'tool_result',
+          tool_use_id: block.id,
+          content: runTool(block.name, block.input as Record<string, unknown>),
+        })
+      }
+    }
+    convo.push({ role: 'user', content: results })
+  }
 }
 
 async function streamOpenAICompatible(
