@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { runPipeline, runesToLatin, type Stage } from '../../core'
 import { CORPUS } from '../data/corpus'
+import { Attacks } from './Attacks'
 
 type UIStage = {
   op: string
@@ -12,9 +13,14 @@ type UIStage = {
   b?: number
   primer?: string
   decrypt?: boolean
+  interrupts?: string
 }
 
 const OPS = ['atbash', 'shift', 'vigenere', 'prime', 'totient', 'affine', 'autokey']
+
+function parseInts(s: string): number[] {
+  return (s || '').split(/[^0-9]+/).filter(Boolean).map(Number)
+}
 
 function toStage(s: UIStage): Stage {
   const p: Record<string, unknown> = {}
@@ -23,6 +29,8 @@ function toStage(s: UIStage): Stage {
     p.key = s.key ?? ''
     p.mode = s.mode ?? 'sub'
     p.decrypt = !!s.decrypt
+    const ii = parseInts(s.interrupts ?? '')
+    if (ii.length) p.interruptIndices = ii
   }
   if (s.op === 'prime' || s.op === 'totient') {
     p.mode = s.mode ?? 'sub'
@@ -60,12 +68,10 @@ export function CipherLabPanel() {
       <h1>
         <span className="accent">ᛉ</span> Cipher Lab
       </h1>
-      <p className="sub">Chain transforms over the 29-rune alphabet and watch the output update live.</p>
+      <p className="sub">Chain transforms over the 29-rune alphabet, or fire automated attacks. Output updates live.</p>
 
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <label className="fld" style={{ marginBottom: 0 }}>
-          Input (runes)
-        </label>
+        <label className="fld" style={{ marginBottom: 0 }}>Input (runes)</label>
         <select
           style={{ width: 260 }}
           onChange={(e) => {
@@ -74,54 +80,49 @@ export function CipherLabPanel() {
           }}
           defaultValue=""
         >
-          <option value="" disabled>
-            load a corpus section…
-          </option>
+          <option value="" disabled>load a corpus section…</option>
           {CORPUS.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.title} ({c.status})
-            </option>
+            <option key={c.id} value={c.id}>{c.title} ({c.status})</option>
           ))}
         </select>
       </div>
-      <textarea
-        style={{ marginTop: 6 }}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        spellCheck={false}
+      <textarea style={{ marginTop: 6 }} value={input} onChange={(e) => setInput(e.target.value)} spellCheck={false} />
+
+      <Attacks
+        input={input}
+        onApply={(applied) => setStages(applied.map((st) => ({ op: st.op, ...(st.params as Partial<UIStage>) })))}
       />
 
       <h2>Pipeline</h2>
       {stages.map((s, i) => (
         <div className="card row wrap" key={i} style={{ alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <select style={{ width: 130 }} value={s.op} onChange={(e) => patch(i, { op: e.target.value })}>
-            {OPS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
+          <select style={{ width: 120 }} value={s.op} onChange={(e) => patch(i, { op: e.target.value })}>
+            {OPS.map((o) => (<option key={o} value={o}>{o}</option>))}
           </select>
 
           {s.op === 'shift' && (
-            <input type="number" style={{ width: 90 }} placeholder="n" value={s.n ?? 0} onChange={(e) => patch(i, { n: +e.target.value })} />
+            <input type="number" style={{ width: 80 }} placeholder="n" value={s.n ?? 0} onChange={(e) => patch(i, { n: +e.target.value })} />
           )}
           {s.op === 'vigenere' && (
-            <input type="text" style={{ width: 180 }} placeholder="key (runes or latin)" value={s.key ?? ''} onChange={(e) => patch(i, { key: e.target.value })} />
+            <>
+              <input type="text" style={{ width: 150 }} placeholder="key (runes/latin)" value={s.key ?? ''} onChange={(e) => patch(i, { key: e.target.value })} />
+              <input type="text" style={{ width: 130 }} placeholder="interrupts e.g. 48,74" value={s.interrupts ?? ''} onChange={(e) => patch(i, { interrupts: e.target.value })} />
+            </>
           )}
           {s.op === 'affine' && (
             <>
-              <input type="number" style={{ width: 70 }} placeholder="a" value={s.a ?? 1} onChange={(e) => patch(i, { a: +e.target.value })} />
-              <input type="number" style={{ width: 70 }} placeholder="b" value={s.b ?? 0} onChange={(e) => patch(i, { b: +e.target.value })} />
+              <input type="number" style={{ width: 64 }} placeholder="a" value={s.a ?? 1} onChange={(e) => patch(i, { a: +e.target.value })} />
+              <input type="number" style={{ width: 64 }} placeholder="b" value={s.b ?? 0} onChange={(e) => patch(i, { b: +e.target.value })} />
             </>
           )}
           {s.op === 'autokey' && (
             <input type="text" style={{ width: 150 }} placeholder="primer" value={s.primer ?? ''} onChange={(e) => patch(i, { primer: e.target.value })} />
           )}
           {(s.op === 'prime' || s.op === 'totient') && (
-            <input type="number" style={{ width: 90 }} placeholder="startN" value={s.startN ?? 1} onChange={(e) => patch(i, { startN: +e.target.value })} />
+            <input type="number" style={{ width: 80 }} placeholder="startN" value={s.startN ?? 1} onChange={(e) => patch(i, { startN: +e.target.value })} />
           )}
           {(s.op === 'vigenere' || s.op === 'prime' || s.op === 'totient') && (
-            <select style={{ width: 90 }} value={s.mode ?? 'sub'} onChange={(e) => patch(i, { mode: e.target.value as 'add' | 'sub' })}>
+            <select style={{ width: 80 }} value={s.mode ?? 'sub'} onChange={(e) => patch(i, { mode: e.target.value as 'add' | 'sub' })}>
               <option value="sub">sub</option>
               <option value="add">add</option>
             </select>
@@ -133,29 +134,19 @@ export function CipherLabPanel() {
             </label>
           )}
 
-          <button className="btn ghost" style={{ marginLeft: 'auto' }} onClick={() => setStages((st) => st.filter((_, k) => k !== i))}>
-            ✕
-          </button>
+          <button className="btn ghost" style={{ marginLeft: 'auto' }} onClick={() => setStages((st) => st.filter((_, k) => k !== i))}>✕</button>
         </div>
       ))}
-      <button className="btn" onClick={() => setStages((st) => [...st, { op: 'shift', n: 1 }])}>
-        + add stage
-      </button>
+      <button className="btn" onClick={() => setStages((st) => [...st, { op: 'shift', n: 1 }])}>+ add stage</button>
 
       <h2>Output</h2>
       {error ? (
-        <div className="mono-out" style={{ color: 'var(--danger)' }}>
-          {error}
-        </div>
+        <div className="mono-out" style={{ color: 'var(--danger)' }}>{error}</div>
       ) : (
         <>
-          <div className="mono-out runes" style={{ whiteSpace: 'pre-wrap' }}>
-            {output || <span className="muted">—</span>}
-          </div>
+          <div className="mono-out runes" style={{ whiteSpace: 'pre-wrap' }}>{output || <span className="muted">—</span>}</div>
           <h2>Transliteration</h2>
-          <div className="mono-out latin" style={{ whiteSpace: 'pre-wrap' }}>
-            {runesToLatin(output) || <span className="muted">—</span>}
-          </div>
+          <div className="mono-out latin" style={{ whiteSpace: 'pre-wrap' }}>{runesToLatin(output) || <span className="muted">—</span>}</div>
         </>
       )}
     </div>

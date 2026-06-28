@@ -1,6 +1,6 @@
 import { atbash } from './atbash'
 import { shift } from './shift'
-import { vigenereEncrypt, vigenereDecrypt } from './vigenere'
+import { vigenereInterrupt } from './vigenere'
 import { primeStreamShift, totientStreamShift } from './totient'
 import { affineEncrypt, affineDecrypt, autokeyEncrypt, autokeyDecrypt } from './affine'
 
@@ -15,8 +15,12 @@ function applyStage(text: string, stage: Stage): string {
       return shift(text, Number(p.n ?? 0))
     case 'vigenere': {
       const key = String(p.key ?? '')
-      const mode = (p.mode as 'add' | 'sub') ?? 'sub'
-      return p.decrypt ? vigenereDecrypt(text, key, mode) : vigenereEncrypt(text, key, mode)
+      let mode = (p.mode as 'add' | 'sub') ?? 'sub'
+      if (p.decrypt) mode = mode === 'add' ? 'sub' : 'add'
+      const interruptIndices = Array.isArray(p.interruptIndices)
+        ? (p.interruptIndices as number[])
+        : undefined
+      return vigenereInterrupt(text, key, { mode, interruptIndices })
     }
     case 'prime':
       return primeStreamShift(text, (p.mode as 'add' | 'sub') ?? 'sub', Number(p.startN ?? 1))
