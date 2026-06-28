@@ -6,6 +6,7 @@ import { AnalysisPanel } from './panels/AnalysisPanel'
 import { HistoryPanel } from './panels/HistoryPanel'
 import { NotesPanel } from './panels/NotesPanel'
 import { SettingsPanel } from './panels/SettingsPanel'
+import { StegoPanel } from './panels/StegoPanel'
 import { ChatDock } from './ai/ChatDock'
 
 const PANELS = [
@@ -14,6 +15,7 @@ const PANELS = [
   { id: 'cipher', label: 'Cipher', glyph: 'ᛉ', Comp: CipherLabPanel },
   { id: 'analysis', label: 'Analyse', glyph: 'ᛏ', Comp: AnalysisPanel },
   { id: 'history', label: 'History', glyph: 'ᚷ', Comp: HistoryPanel },
+  { id: 'stego', label: 'Stego', glyph: 'ᛥ', Comp: StegoPanel },
   { id: 'notes', label: 'Notes', glyph: 'ᛗ', Comp: NotesPanel },
   { id: 'settings', label: 'Settings', glyph: 'ᛒ', Comp: SettingsPanel },
 ] as const
