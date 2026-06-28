@@ -10,7 +10,7 @@ RuneSwiss is a self-contained desktop app (Electron) that combines three things 
 
 Everything works **offline** except the AI chat.
 
-> **Status:** v0.1.0 — the full v1 is built and tested: the cryptography engine, the verified corpus, the cryptic-terminal desktop UI (7 panels), and the streaming AI chat. See [`docs/superpowers/`](docs/superpowers/) for the design spec and plans.
+> **Status:** v0.2.0 — full workbench: the cryptography engine, the verified corpus, a **9-panel** cryptic-terminal UI, an **AI chat that sees your workspace and runs the engine itself**, **automated cipher attacks** (brute-force + Vigenère auto-solve), the original **Cicada media** (page scans / audio / opening images / signed messages), and **steganography** tools. See [`docs/superpowers/`](docs/superpowers/) for the design spec.
 
 ## Install (Windows)
 
