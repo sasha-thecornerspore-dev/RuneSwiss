@@ -10,7 +10,21 @@ RuneSwiss is a self-contained desktop app (Electron) that combines three things 
 
 Everything works **offline** except the AI chat.
 
-> **Status:** under active construction. The cryptography engine (Plan 1) and the verified corpus foundation (Plan 2, in progress) are complete and tested. The desktop UI (Plan 3) and packaged installers (Plan 4) are next. See [`docs/superpowers/`](docs/superpowers/) for the design spec and plans.
+> **Status:** v0.1.0 — the full v1 is built and tested: the cryptography engine, the verified corpus, the cryptic-terminal desktop UI (7 panels), and the streaming AI chat. See [`docs/superpowers/`](docs/superpowers/) for the design spec and plans.
+
+## Install (Windows)
+
+Grab the latest from [**Releases**](https://github.com/sasha-thecornerspore-dev/RuneSwiss/releases):
+
+- **`RuneSwiss-Setup-<version>.exe`** — installer (per-user, pick your folder).
+- **`RuneSwiss-<version>-portable.exe`** — single-file, no install.
+
+Builds are Authenticode-signed as **The Corner Spore**. Because the cert is self-signed, a fresh
+machine still shows SmartScreen ("Windows protected your PC" → *More info* → *Run anyway*) unless the
+Corner Spore root CA is trusted. See [`docs/SIGNING.md`](docs/SIGNING.md).
+
+To run the AI chat, open **Settings**, choose a provider (Anthropic by default), and paste an API key —
+it's encrypted on disk via the OS keychain and only ever sent to the provider you pick.
 
 ---
 
@@ -63,9 +77,9 @@ npm run dev       # launch the Electron app (UI lands in Plan 3)
 ## Roadmap
 
 - [x] **Plan 1 — Core engine** (Gematria, transliteration, ciphers, analysis; fully TDD).
-- [~] **Plan 2 — Corpus** (verbatim transcription, solved-page regressions, full page model, history timeline).
-- [ ] **Plan 3 — Desktop app & AI** (cryptic-terminal UI: Reader, Translator, Cipher Lab, Analysis, History, Notes; pluggable AI chat).
-- [ ] **Plan 4 — Release** (NSIS + portable installers, code-signed; GitHub release).
+- [x] **Plan 2 — Corpus** (verbatim transcription, solved-page regressions, full page model, history timeline).
+- [x] **Plan 3 — Desktop app & AI** (cryptic-terminal UI: Reader, Translator, Cipher Lab, Analysis, History, Notes; pluggable AI chat).
+- [x] **Plan 4 — Release** (NSIS + portable installers, code-signed; GitHub release).
 
 ---
 

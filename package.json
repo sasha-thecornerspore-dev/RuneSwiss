@@ -24,12 +24,33 @@
     "electron": "^33.2.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.70.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@anthropic-ai/sdk": "^0.70.0"
+  },
+  "build": {
+    "appId": "dev.thecornerspore.runeswiss",
+    "productName": "RuneSwiss",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["out/**/*", "package.json"],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "build/icon.ico",
+      "publisherName": "The Corner Spore"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "RuneSwiss",
+      "artifactName": "RuneSwiss-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "RuneSwiss-${version}-portable.${ext}"
+    }
   }
 }
