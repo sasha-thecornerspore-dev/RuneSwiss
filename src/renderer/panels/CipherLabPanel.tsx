@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { runPipeline, runesToLatin, type Stage } from '../../core'
 import { CORPUS } from '../data/corpus'
 import { Attacks } from './Attacks'
+import { setWorkspace } from '../state/workspace'
 
 type UIStage = {
   op: string
@@ -62,6 +63,13 @@ export function CipherLabPanel() {
 
   const patch = (i: number, d: Partial<UIStage>) =>
     setStages((st) => st.map((s, k) => (k === i ? { ...s, ...d } : s)))
+
+  useEffect(() => {
+    const ops = stages.map((s) => s.op).join(' → ')
+    setWorkspace({
+      cipher: `Cipher Lab pipeline [${ops}] output (transliteration): ${runesToLatin(output).replace(/\s+/g, ' ').slice(0, 240)}`,
+    })
+  }, [output, stages])
 
   return (
     <div className="panel" style={{ maxWidth: 1000 }}>

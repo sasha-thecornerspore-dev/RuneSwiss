@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   frequencies,
   indexOfCoincidence,
@@ -7,6 +7,7 @@ import {
   runeCount,
 } from '../../core'
 import { CORPUS } from '../data/corpus'
+import { setWorkspace } from '../state/workspace'
 
 const firstUnsolved = CORPUS.find((c) => c.status === 'unsolved') ?? CORPUS[0]
 
@@ -18,6 +19,13 @@ export function AnalysisPanel() {
   const ioc = indexOfCoincidence(input)
   const fried = friedmanKeyLength(input)
   const kas = kasiskiCandidates(input).slice(0, 6)
+
+  useEffect(() => {
+    setWorkspace({
+      analysis: `Analysis of ${runeCount(input)} runes: IoC ${ioc.toFixed(4)}, Friedman key-len ${fried ? fried.toFixed(2) : '—'}, Kasiski candidates ${kas.map((c) => c.keyLength).join(', ') || '—'}`,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [input, ioc, fried])
 
   return (
     <div className="panel" style={{ maxWidth: 1000 }}>

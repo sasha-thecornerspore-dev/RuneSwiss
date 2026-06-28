@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { runesToLatin } from '../../core'
 import { CORPUS } from '../data/corpus'
+import { setWorkspace } from '../state/workspace'
 
 type View = 'runes' | 'latin' | 'plain'
 
@@ -8,6 +9,15 @@ export function ReaderPanel() {
   const [sel, setSel] = useState(CORPUS[0]?.id)
   const [view, setView] = useState<View>('runes')
   const s = CORPUS.find((x) => x.id === sel)
+
+  useEffect(() => {
+    if (!s) return
+    const clip = (t: string) => t.replace(/\s+/g, ' ').slice(0, 240)
+    setWorkspace({
+      page: `Reader is on "${s.title}" (${s.status}; ${s.method}). Ciphertext: ${clip(s.cipherText)} | Transliteration: ${clip(runesToLatin(s.cipherText))}${s.plainLatin ? ` | Known plaintext: ${clip(s.plainLatin)}` : ''}`,
+    })
+  }, [s])
+
   if (!s) return <div className="panel">No corpus loaded.</div>
 
   return (

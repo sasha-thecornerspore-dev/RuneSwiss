@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { buildLiberPrimusSystemPrompt } from '../../core/ai/prompt'
+import { buildContextString, useContextSummary } from '../state/workspace'
 
 type Msg = { role: 'user' | 'assistant'; content: string }
 
@@ -12,6 +13,7 @@ export function ChatDock() {
   const cancelRef = useRef<null | (() => void)>(null)
   const logRef = useRef<HTMLDivElement>(null)
   const hasApi = typeof window !== 'undefined' && !!window.api
+  const sees = useContextSummary()
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight })
@@ -30,7 +32,7 @@ export function ChatDock() {
       provider: settings?.provider ?? 'anthropic',
       model: settings?.model,
       baseUrl: settings?.baseUrl,
-      system: buildLiberPrimusSystemPrompt(),
+      system: buildLiberPrimusSystemPrompt(buildContextString()),
     }
     cancelRef.current = window.api!.ai.chat(convo, config, {
       onDelta: (t) =>
@@ -95,6 +97,11 @@ export function ChatDock() {
           </div>
         )}
       </div>
+      {sees && (
+        <div className="muted" style={{ fontSize: 10, padding: '0 12px 6px' }}>
+          ✦ sees: {sees}
+        </div>
+      )}
       <div className="chat-in">
         <textarea
           value={input}
