@@ -4,6 +4,9 @@ import { TranslatorPanel } from './panels/TranslatorPanel'
 import { CipherLabPanel } from './panels/CipherLabPanel'
 import { AnalysisPanel } from './panels/AnalysisPanel'
 import { HistoryPanel } from './panels/HistoryPanel'
+import { NotesPanel } from './panels/NotesPanel'
+import { SettingsPanel } from './panels/SettingsPanel'
+import { ChatDock } from './ai/ChatDock'
 
 const PANELS = [
   { id: 'reader', label: 'Reader', glyph: 'ᛟ', Comp: ReaderPanel },
@@ -11,6 +14,8 @@ const PANELS = [
   { id: 'cipher', label: 'Cipher', glyph: 'ᛉ', Comp: CipherLabPanel },
   { id: 'analysis', label: 'Analyse', glyph: 'ᛏ', Comp: AnalysisPanel },
   { id: 'history', label: 'History', glyph: 'ᚷ', Comp: HistoryPanel },
+  { id: 'notes', label: 'Notes', glyph: 'ᛗ', Comp: NotesPanel },
+  { id: 'settings', label: 'Settings', glyph: 'ᛒ', Comp: SettingsPanel },
 ] as const
 
 export function App() {
@@ -34,6 +39,7 @@ export function App() {
       <main className="workspace">
         <Active />
       </main>
+      <ChatDock />
     </div>
   )
 }
