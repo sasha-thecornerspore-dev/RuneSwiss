@@ -33,23 +33,34 @@ export function SettingsPanel() {
           <span className="accent">ᛒ</span> Settings
         </h1>
         <p className="sub">
-          The AI provider and API key are managed in the desktop app (the key is encrypted on disk
-          via the OS keychain). This web preview runs the offline panels only.
+          The AI provider and API key are managed in the desktop app (keys are encrypted on disk via
+          the OS keychain). This web preview runs the offline panels only.
         </p>
       </div>
     )
   }
 
+  const modelPlaceholder =
+    s.provider === 'openai'
+      ? 'e.g. llama3.1 or gpt-4o-mini'
+      : s.provider === 'claude-cli'
+        ? 'claude-opus-4-8 (optional — Claude Code default if blank)'
+        : 'claude-opus-4-8'
+
   return (
-    <div className="panel" style={{ maxWidth: 620 }}>
+    <div className="panel" style={{ maxWidth: 640 }}>
       <h1>
         <span className="accent">ᛒ</span> Settings
       </h1>
-      <p className="sub">The assistant backend. Your key is encrypted at rest and never leaves this machine except in calls to the provider you choose.</p>
+      <p className="sub">The assistant backend. Keys are encrypted at rest and only sent to the provider you choose.</p>
 
       <label className="fld">Provider</label>
-      <select value={s.provider} onChange={(e) => setS({ ...s, provider: e.target.value as RuneSwissSettings['provider'] })}>
-        <option value="anthropic">Anthropic (Claude)</option>
+      <select
+        value={s.provider}
+        onChange={(e) => setS({ ...s, provider: e.target.value as RuneSwissSettings['provider'] })}
+      >
+        <option value="anthropic">Anthropic API (Claude, pay-per-token key)</option>
+        <option value="claude-cli">Claude subscription (via Claude Code — no key)</option>
         <option value="openai">OpenAI-compatible (Ollama / local gateway / custom)</option>
       </select>
 
@@ -57,7 +68,7 @@ export function SettingsPanel() {
       <input
         type="text"
         value={s.model}
-        placeholder={s.provider === 'anthropic' ? 'claude-opus-4-8' : 'e.g. llama3.1 or gpt-4o-mini'}
+        placeholder={modelPlaceholder}
         onChange={(e) => setS({ ...s, model: e.target.value })}
       />
 
@@ -79,42 +90,56 @@ export function SettingsPanel() {
         </button>
       </div>
 
-      <h2>API key</h2>
-      <p className="sub" style={{ marginTop: 0 }}>
-        Status: {hasKey ? <span style={{ color: 'var(--solved)' }}>a key is stored</span> : <span className="muted">no key stored</span>}
-      </p>
-      <div className="row" style={{ gap: 8 }}>
-        <input
-          type="password"
-          className="grow"
-          value={keyInput}
-          placeholder={s.provider === 'anthropic' ? 'sk-ant-…' : 'token (optional for local servers)'}
-          onChange={(e) => setKeyInput(e.target.value)}
-        />
-        <button
-          className="btn"
-          onClick={async () => {
-            await window.api!.secrets.set(keyInput)
-            setKeyInput('')
-            setHasKey(await window.api!.secrets.has())
-            note('Key saved.')
-          }}
-        >
-          Save key
-        </button>
-        {hasKey && (
-          <button
-            className="btn ghost"
-            onClick={async () => {
-              await window.api!.secrets.set('')
-              setHasKey(await window.api!.secrets.has())
-              note('Key cleared.')
-            }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
+      {s.provider === 'claude-cli' ? (
+        <div className="card" style={{ marginTop: 16 }}>
+          <span className="accent">No API key needed.</span>{' '}
+          <span className="muted">
+            RuneSwiss runs your local <code>claude</code> CLI, which is authenticated with your Claude
+            Code login — i.e. your Claude Pro/Max subscription. Make sure Claude Code is installed and
+            signed in (<code>claude</code> on your PATH). Note: in this mode the assistant answers from
+            its own reasoning and can't call RuneSwiss's engine tools (that's the Anthropic-API mode).
+          </span>
+        </div>
+      ) : (
+        <>
+          <h2>API key</h2>
+          <p className="sub" style={{ marginTop: 0 }}>
+            Status: {hasKey ? <span style={{ color: 'var(--solved)' }}>a key is stored</span> : <span className="muted">no key stored</span>}
+          </p>
+          <div className="row" style={{ gap: 8 }}>
+            <input
+              type="password"
+              className="grow"
+              value={keyInput}
+              placeholder={s.provider === 'anthropic' ? 'sk-ant-…' : 'token (optional for local servers)'}
+              onChange={(e) => setKeyInput(e.target.value)}
+            />
+            <button
+              className="btn"
+              onClick={async () => {
+                await window.api!.secrets.set(keyInput)
+                setKeyInput('')
+                setHasKey(await window.api!.secrets.has())
+                note('Key saved.')
+              }}
+            >
+              Save key
+            </button>
+            {hasKey && (
+              <button
+                className="btn ghost"
+                onClick={async () => {
+                  await window.api!.secrets.set('')
+                  setHasKey(await window.api!.secrets.has())
+                  note('Key cleared.')
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </>
+      )}
 
       {flash && <div className="card" style={{ marginTop: 14, color: 'var(--accent)' }}>{flash}</div>}
     </div>

@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 
 interface AiConfig {
-  provider: 'anthropic' | 'openai'
+  provider: 'anthropic' | 'openai' | 'claude-cli'
   model?: string
   baseUrl?: string
   system?: string

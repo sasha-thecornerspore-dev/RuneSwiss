@@ -3,7 +3,7 @@
 export {}
 
 interface AiConfig {
-  provider: 'anthropic' | 'openai'
+  provider: 'anthropic' | 'openai' | 'claude-cli'
   model?: string
   baseUrl?: string
   system?: string
@@ -19,7 +19,7 @@ interface AiHandlers {
 }
 
 export interface RuneSwissSettings {
-  provider: 'anthropic' | 'openai'
+  provider: 'anthropic' | 'openai' | 'claude-cli'
   model: string
   baseUrl: string
   accent: string

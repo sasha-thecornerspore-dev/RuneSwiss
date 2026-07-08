@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs'
 
 export interface Settings {
-  provider: 'anthropic' | 'openai'
+  provider: 'anthropic' | 'openai' | 'claude-cli'
   model: string
   baseUrl: string
   accent: string
