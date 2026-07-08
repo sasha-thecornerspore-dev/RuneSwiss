@@ -94,10 +94,13 @@ export function SettingsPanel() {
         <div className="card" style={{ marginTop: 16 }}>
           <span className="accent">No API key needed.</span>{' '}
           <span className="muted">
-            RuneSwiss runs your local <code>claude</code> CLI, which is authenticated with your Claude
-            Code login — i.e. your Claude Pro/Max subscription. Make sure Claude Code is installed and
-            signed in (<code>claude</code> on your PATH). Note: in this mode the assistant answers from
-            its own reasoning and can't call RuneSwiss's engine tools (that's the Anthropic-API mode).
+            RuneSwiss runs your local <code>claude</code> CLI, authenticated with your Claude Code
+            login — i.e. your Claude Pro/Max subscription. Make sure Claude Code is installed and
+            signed in (<code>claude</code> on your PATH). The assistant gets the <em>full</em> engine
+            toolset here too: RuneSwiss hands <code>claude</code> its cipher/analysis tools over a
+            local MCP server, so it can transliterate, run pipelines, and brute-force just like the
+            API mode. (This mode uses your global Claude Code config, so your own CLAUDE.md and hooks
+            apply.)
           </span>
         </div>
       ) : (

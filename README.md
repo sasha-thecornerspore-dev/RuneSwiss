@@ -23,8 +23,17 @@ Builds are Authenticode-signed as **The Corner Spore**. Because the cert is self
 machine still shows SmartScreen ("Windows protected your PC" → *More info* → *Run anyway*) unless the
 Corner Spore root CA is trusted. See [`docs/SIGNING.md`](docs/SIGNING.md).
 
-To run the AI chat, open **Settings**, choose a provider (Anthropic by default), and paste an API key —
-it's encrypted on disk via the OS keychain and only ever sent to the provider you pick.
+To run the AI chat, open **Settings** and choose a provider:
+
+- **Anthropic API** — paste an API key; it's encrypted on disk via the OS keychain and only ever sent
+  to the provider you pick.
+- **Claude subscription (no key)** — routes the chat through your local **Claude Code** CLI, which is
+  already signed in with your Claude Pro/Max subscription. No key is entered anywhere. RuneSwiss hands
+  `claude` its cipher/analysis engine as a local MCP server, so this mode gets the **full toolset**
+  (transliterate, run pipelines, brute-force, key-length/Vigenère solve) — `claude` runs its own tool
+  loop. Requires Claude Code installed and logged in (`claude` on your PATH). Note: this mode uses your
+  global Claude Code config, so your own `CLAUDE.md` and hooks apply.
+- **OpenAI-compatible** — point it at Ollama / a local gateway / any custom `/chat/completions` endpoint.
 
 ---
 
