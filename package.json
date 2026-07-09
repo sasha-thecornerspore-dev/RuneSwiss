@@ -1,6 +1,6 @@
 {
   "name": "runeswiss",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Liber Primus cryptanalysis workbench — Gematria Primus, ciphers, analysis, AI brainstorming.",
   "author": "Jeff Schatz",
   "license": "MIT",
@@ -53,7 +53,9 @@
         "portable"
       ],
       "icon": "build/icon.ico",
-      "publisherName": "The Corner Spore"
+      "signtoolOptions": {
+        "publisherName": "The Corner Spore"
+      }
     },
     "nsis": {
       "oneClick": false,
