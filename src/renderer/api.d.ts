@@ -30,11 +30,21 @@ export interface RuneSwissNote {
   createdAt: number
 }
 
+interface RuneSwissUpdates {
+  onAvailable(cb: (version: string) => void): () => void
+  onProgress(cb: (percent: number) => void): () => void
+  onDownloaded(cb: (version: string) => void): () => void
+  onError(cb: (message: string) => void): () => void
+  install(): Promise<void>
+  check(): Promise<{ ok: boolean; message?: string }>
+}
+
 interface RuneSwissApi {
   ai: { chat(messages: AiMessage[], config: AiConfig, handlers: AiHandlers): () => void }
   secrets: { has(): Promise<boolean>; set(key: string): Promise<boolean> }
   settings: { get(): Promise<RuneSwissSettings>; set(s: RuneSwissSettings): Promise<RuneSwissSettings> }
   notes: { load(): Promise<RuneSwissNote[]>; save(n: RuneSwissNote[]): Promise<RuneSwissNote[]> }
+  updates: RuneSwissUpdates
 }
 
 declare global {

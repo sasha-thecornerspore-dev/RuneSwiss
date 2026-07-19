@@ -63,6 +63,25 @@ const api = {
     load: (): Promise<unknown[]> => ipcRenderer.invoke('notes:load'),
     save: (n: unknown[]): Promise<unknown[]> => ipcRenderer.invoke('notes:save', n),
   },
+  updates: {
+    // Each subscription returns an unsubscribe function.
+    onAvailable: (cb: (version: string) => void): (() => void) =>
+      subscribe('update:available', (p: { version: string }) => cb(p.version)),
+    onProgress: (cb: (percent: number) => void): (() => void) =>
+      subscribe('update:progress', (p: { percent: number }) => cb(p.percent)),
+    onDownloaded: (cb: (version: string) => void): (() => void) =>
+      subscribe('update:downloaded', (p: { version: string }) => cb(p.version)),
+    onError: (cb: (message: string) => void): (() => void) =>
+      subscribe('update:error', (p: { message: string }) => cb(p.message)),
+    install: (): Promise<void> => ipcRenderer.invoke('update:install'),
+    check: (): Promise<{ ok: boolean; message?: string }> => ipcRenderer.invoke('update:check'),
+  },
+}
+
+function subscribe<T>(channel: string, cb: (payload: T) => void): () => void {
+  const handler = (_e: IpcRendererEvent, payload: T): void => cb(payload)
+  ipcRenderer.on(channel, handler)
+  return () => ipcRenderer.off(channel, handler)
 }
 
 contextBridge.exposeInMainWorld('api', api)

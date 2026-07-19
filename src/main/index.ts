@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron'
 import { join } from 'node:path'
 import { streamChat, type ChatConfig, type ChatMessage } from './llm'
+import { initAutoUpdater } from './updater'
 import * as store from './store'
 
 let mainWindow: BrowserWindow | null = null
@@ -88,6 +89,7 @@ app.whenReady().then(() => {
   Menu.setApplicationMenu(null)
   registerIpc()
   createWindow()
+  initAutoUpdater(() => mainWindow)
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })

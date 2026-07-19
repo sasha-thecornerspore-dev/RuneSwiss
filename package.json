@@ -1,6 +1,6 @@
 {
   "name": "runeswiss",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Liber Primus cryptanalysis workbench — Gematria Primus, ciphers, analysis, AI brainstorming.",
   "author": "Jeff Schatz",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "dev": "electron-vite dev",
     "dev:web": "vite --config vite.web.config.ts",
     "build": "electron-vite build && vite build --config vite.mcp.config.ts",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder --publish never"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -31,7 +31,8 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.70.0"
+    "@anthropic-ai/sdk": "^0.70.0",
+    "electron-updater": "^6.8.9"
   },
   "build": {
     "appId": "dev.thecornerspore.runeswiss",
@@ -53,6 +54,7 @@
         "portable"
       ],
       "icon": "build/icon.ico",
+      "verifyUpdateCodeSignature": false,
       "signtoolOptions": {
         "publisherName": "The Corner Spore"
       }
@@ -66,6 +68,13 @@
     },
     "portable": {
       "artifactName": "RuneSwiss-${version}-portable.${ext}"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "sasha-thecornerspore-dev",
+        "repo": "RuneSwiss"
+      }
+    ]
   }
 }

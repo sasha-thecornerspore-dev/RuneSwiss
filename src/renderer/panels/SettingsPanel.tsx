@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import type { RuneSwissSettings } from '../api'
 
 const DEFAULTS: RuneSwissSettings = {
-  provider: 'anthropic',
+  provider: 'claude-cli',
   model: 'claude-opus-4-8',
   baseUrl: '',
   accent: '#34e0c4',

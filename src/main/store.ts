@@ -18,7 +18,9 @@ export interface Note {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-  provider: 'anthropic',
+  // Default to the Claude subscription (local Claude Code) so the app works out of the box with no
+  // API key. Users can switch to the Anthropic API or an OpenAI-compatible endpoint in Settings.
+  provider: 'claude-cli',
   model: 'claude-opus-4-8',
   baseUrl: '',
   accent: '#34e0c4',

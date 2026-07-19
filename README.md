@@ -10,7 +10,7 @@ RuneSwiss is a self-contained desktop app (Electron) that combines three things 
 
 Everything works **offline** except the AI chat.
 
-> **Status:** v0.2.0 — full workbench: the cryptography engine, the verified corpus, a **9-panel** cryptic-terminal UI, an **AI chat that sees your workspace and runs the engine itself**, **automated cipher attacks** (brute-force + Vigenère auto-solve), the original **Cicada media** (page scans / audio / opening images / signed messages), and **steganography** tools. See [`docs/superpowers/`](docs/superpowers/) for the design spec.
+> **Status:** v0.2.2 — full workbench: the cryptography engine, the verified corpus, a **9-panel** cryptic-terminal UI, an **AI chat that sees your workspace and runs the engine itself** (defaults to your **Claude subscription** — no API key), **automated cipher attacks** (brute-force + Vigenère auto-solve), the original **Cicada media** (page scans / audio / opening images / signed messages), **steganography** tools, and **built-in auto-update**. See [`docs/superpowers/`](docs/superpowers/) for the design spec.
 
 ## Install (Windows)
 
@@ -23,7 +23,13 @@ Builds are Authenticode-signed as **The Corner Spore**. Because the cert is self
 machine still shows SmartScreen ("Windows protected your PC" → *More info* → *Run anyway*) unless the
 Corner Spore root CA is trusted. See [`docs/SIGNING.md`](docs/SIGNING.md).
 
-To run the AI chat, open **Settings** and choose a provider:
+**Auto-update:** the **installer** build updates itself. On launch it checks Releases, downloads a
+newer signed build in the background, and shows a "Restart & update" bar when it's ready (it also
+installs on next quit). The portable build doesn't self-update — grab a new one manually. Auto-update
+only works from **v0.2.2 onward**; an older install has to be replaced once by hand.
+
+To run the AI chat, open **Settings** and choose a provider (it **defaults to your Claude
+subscription**, so it works out of the box with no key):
 
 - **Anthropic API** — paste an API key; it's encrypted on disk via the OS keychain and only ever sent
   to the provider you pick.
